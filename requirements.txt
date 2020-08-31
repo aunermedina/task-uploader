@@ -1,0 +1,3 @@
+todoist-python
+openpyxl
+python-dotenv
