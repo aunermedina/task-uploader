@@ -43,8 +43,8 @@ def todoist_task_uploader(cal, fin):
             task_count += 1
 
     # Commit Changes and Sync
-    #api.commit()
-    #api.sync()
+    api.commit()
+    api.sync()
 
     # Print successful message
     print('Successfully created {} section(s) with {} task(s).'.format(subject_count, task_count))
