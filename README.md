@@ -1,7 +1,6 @@
 # Setting up a new project in Todoist app.
-# <img src="https://d3vv6lp55qjaqc.cloudfront.net/items/1L1w0v431V0d1K410f3Y/keepAChangelog-logo-dark.svg" height=150 alt="Keep a Changelog" />
 
-[![Keep a Changelog v1.1.0 badge][changelog-badge]][changelog] [![Version 1.1.0 Badge][version-badge]][changelog]
+[![changelog](https://img.shields.io/badge/changelog-v1.1.0-blue.svg)](CHANGELOG)
 
 
 My personal project creation script for Todoist app.
