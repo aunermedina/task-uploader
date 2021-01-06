@@ -1,6 +1,6 @@
 # Setting up a new project in Todoist app.
 
-[![changelog](https://img.shields.io/badge/changelog-v1.1.0-blue.svg)](CHANGELOG)
+[![changelog](https://img.shields.io/badge/changelog-v1.1.0-blue.svg)](CHANGELOG.md)
 
 
 My personal project creation script for Todoist app.
