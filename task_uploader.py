@@ -44,7 +44,7 @@ def todoist_task_uploader(cal, fin):
 
     for materia in wb.worksheets:
         # Create Section per Subject(Worksheet)
-        subject = materia.title.split('-')
+        subject = materia.title.split('-')  # worksheet in format: Subject-label
         section = api.sections.add(subject[0], semester['id'])
         new_label = api.labels.add(subject[1])
         label_id = 2155146353 if subject[1] == 'proyecto' else new_label['id']
@@ -54,14 +54,20 @@ def todoist_task_uploader(cal, fin):
         for task in materia.values:
             # Create Tasks Per Section
             api.items.add(task[0],
-                          due={"date": datetime.strftime(task[1], '%Y-%m-%d')},
-        #                   project_id=school_pid,
-                          section_id=section['id'],
-                          labels=[2155113156, label_id])  # label 'INICIO' and section label
+                          due = {
+                              "string": task[1],
+                              "date": task[1],  # datetime must be text in excel with format: 2021-08-10 not 2021-8-10
+                              "recurring": False,
+                              },
+                          section_id = section['id'],
+                          description = task[2],  # type of activity: foro or buzon
+                          labels = [2155113156, label_id])  # label 'INICIO' and section label
             task_count += 1
 
     # Commit Changes and Sync
+    logging.info('Committing changes to API...')
     api.commit()
+    logging.info("Sync'ing changes to API...")
     api.sync()
 
     # Print successful message
@@ -70,27 +76,10 @@ def todoist_task_uploader(cal, fin):
     
 
 if __name__ == "__main__":
-    # if os.getenv('DEBUG') == 'true':
-    #     logging.debug('Debugging')
-    #     api = TodoistAPI(os.getenv('API_TOKEN'))
-    #     logging.debug('Connection established!')
-    #     api.sync()
-    #     # playground down here
-    #     # Search for desire Project (SCHOOL)
-    #     for project in api.state['projects']:
-    #         if 'SCHOOL' in project['name']:
-    #             school_pid = project['id']
-        
-    #     semester = api.projects.add('Semester test', parent_id=school_pid, color=randint(30, 49))
-    #     api.commit()
-    #     api.sync()
-
-    # else:    
-        # Define or gather the options and file to use
     logging.info('Starting configuration...')
     parser = argparse.ArgumentParser(prog='task_uploader', description="Create tasks in Todoist app based on xlsx file")
     parser.add_argument("-c", "--calendar", help="Calendar Description. e.g. 2020B", required=True)
-    parser.add_argument("-f", "--file", help="A file to process", required=True)
+    parser.add_argument("-f", "--file", help="A file to process", required=True)  # file should be in the same path
     args = parser.parse_args()
-
+    # Executiong string: python task_uploader.py -c 2021B -f 2021B.xlsx
     todoist_task_uploader(args.calendar, args.file)
