@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documente in this file.
 
+## [1.2.0] - 2021-02-22
+
+### Changed
+- Changed the functionality to pull the new labels, this should be included in the same sheet name separated with a hyphen (-)
+
 ## [1.1.0] - 2021-01-06
 
 ### Added
