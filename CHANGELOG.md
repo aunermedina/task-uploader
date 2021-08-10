@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documente in this file.
 
+## [1.3.0] - 2021-08-10
+
+### Changed
+- Changed the functionality to enter due dates as new parameters are required, also added the type of activity for each one.
 ## [1.2.0] - 2021-02-22
 
 ### Changed
