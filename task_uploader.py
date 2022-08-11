@@ -1,11 +1,10 @@
 import os
 import argparse
 import logging
-from todoist.api import SyncError, TodoistAPI
-from openpyxl import load_workbook
-from datetime import datetime
-from dotenv import load_dotenv
 from random import randint
+from todoist_api_python.api import TodoistAPI
+from openpyxl import load_workbook
+from dotenv import load_dotenv
 
 load_dotenv()
 
@@ -28,47 +27,41 @@ def todoist_task_uploader(cal, fin):
     # Connect with Todoist API
     api = TodoistAPI(os.getenv('API_TOKEN'))
     logging.info('Connection established!')
-    api.sync()
+
+    # Get projects list
+    projects = api.get_projects()
 
     # Search for desire Project (SCHOOL)
-    for project in api.state['projects']:
-        if 'SCHOOL' in project['name']:
-            school_pid = project['id']
+    for i in range(len(projects)):
+        if "SCHOOL" in projects[i].name:
+            school_pid = projects[i].id
 
     # read file
     logging.info('Reading file...')
     wb = load_workbook(fin)
-    logging.info('Creating new project...')
+
     # Create new Semester Project
-    semester = api.projects.add('Semester ' + cal, parent_id=school_pid, color=randint(30, 49))
+    logging.info('Creating new project...')
+    semester = api.add_project(name='Semester ' + cal, parent_id=school_pid, color=randint(30, 49))
 
     for materia in wb.worksheets:
         # Create Section per Subject(Worksheet)
-        subject = materia.title.split('-')  # worksheet in format: Subject-label
-        section = api.sections.add(subject[0], semester['id'])
-        new_label = api.labels.add(subject[1])
-        label_id = 2155146353 if subject[1] == 'proyecto' else new_label['id']
+        subject = materia.title.split('-')  # worksheet in format: Subject-Label
+        section = api.add_section(name=subject[0], project_id=semester.id)
+        label_id = 2155146353 if subject[1] == 'proyecto' else api.add_label(name=subject[1]).id
         subject_count += 1
         logging.info('Creating section: ' + subject[0])
         logging.info('Creating tasks...')
         for task in materia.values:
             # Create Tasks Per Section
-            api.items.add(task[0],
-                          due = {
-                              "string": task[1],
-                              "date": task[1],  # datetime must be text in excel with format: 2021-08-10 not 2021-8-10
-                              "recurring": False,
-                              },
-                          section_id = section['id'],
-                          description = task[2],  # type of activity: foro or buzon
-                          labels = [2155113156, label_id])  # label 'INICIO' and section label
-            task_count += 1
-
-    # Commit Changes and Sync
-    logging.info('Committing changes to API...')
-    api.commit()
-    logging.info("Sync'ing changes to API...")
-    api.sync()
+            try:
+                # due_date must be text in excel with format: 2021-08-10 not 2021-8-10
+                # description is type of activity: foro or buzon
+                # label_ids are label 'INICIO' and section label
+                api.add_task(content=task[0], description=task[2], section_id=section.id, label_ids=[2155113156, label_id], due_date=task[1])
+                task_count += 1
+            except Exception as error:
+                logging.error(error)
 
     # Print successful message
     logging.info('Successfully created {} section(s) with {} task(s).'.format(subject_count, task_count))
@@ -81,5 +74,5 @@ if __name__ == "__main__":
     parser.add_argument("-c", "--calendar", help="Calendar Description. e.g. 2020B", required=True)
     parser.add_argument("-f", "--file", help="A file to process", required=True)  # file should be in the same path
     args = parser.parse_args()
-    # Executiong string: python task_uploader.py -c 2021B -f 2021B.xlsx
+    # Executiong string: python task_uploader.py -c 2022A -f 2022A.xlsx
     todoist_task_uploader(args.calendar, args.file)
