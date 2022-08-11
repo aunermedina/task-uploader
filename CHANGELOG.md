@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documente in this file.
 
+## [1.4.0] - 2022-08-11
+
+### Added
+- todoist-api-python package which is the latest python SDK for todoist.
+
+### Changed 
+- Commands to match the new python SDK
+
 ## [1.3.0] - 2021-08-10
 
 ### Changed
