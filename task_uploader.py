@@ -48,7 +48,8 @@ def todoist_task_uploader(cal, fin):
         # Create Section per Subject(Worksheet)
         subject = materia.title.split('-')  # worksheet in format: Subject-Label
         section = api.add_section(name=subject[0], project_id=semester.id)
-        label_id = 2155146353 if subject[1] == 'proyecto' else api.add_label(name=subject[1]).id
+        # label_id = 2155146353 if subject[1] == 'proyecto' else api.add_label(name=subject[1]).id
+        label = api.get_label(label_id="2155146353") if subject[1] == 'proyecto' else api.add_label(name=subject[1])
         subject_count += 1
         logging.info('Creating section: ' + subject[0])
         logging.info('Creating tasks...')
@@ -57,8 +58,8 @@ def todoist_task_uploader(cal, fin):
             try:
                 # due_date must be text in excel with format: 2021-08-10 not 2021-8-10
                 # description is type of activity: foro or buzon
-                # label_ids are label 'INICIO' and section label
-                api.add_task(content=task[0], description=task[2], section_id=section.id, label_ids=[2155113156, label_id], due_date=task[1])
+                # label_ids are label 'INICIO' (2155113156) and section label
+                api.add_task(content=task[0], description=task[2], section_id=section.id, labels=['INICIO', label.name], due_date=task[1])
                 task_count += 1
             except Exception as error:
                 logging.error(error)
@@ -75,4 +76,5 @@ if __name__ == "__main__":
     parser.add_argument("-f", "--file", help="A file to process", required=True)  # file should be in the same path
     args = parser.parse_args()
     # Executiong string: python task_uploader.py -c 2022A -f 2022A.xlsx
+    # PowerShell exe string: py task_uploader.py -c 2023A -f 2023A.xlsx
     todoist_task_uploader(args.calendar, args.file)
